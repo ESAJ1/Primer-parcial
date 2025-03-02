@@ -1,0 +1,772 @@
+package ordenamiento;
+
+import java.io.*;
+import java.util.*;
+
+
+/**
+ * Clase principal del proyecto de algoritmos de ordenamiento y búsqueda
+ * Universidad Da Vinci de Guatemala - Estructura de Datos
+ */
+public class ProyectoOrdenamiento {
+    private static List<Integer> listaDatos = new ArrayList<>();
+    private static final Scanner scanner = new Scanner(System.in);
+    
+    public static void main(String[] args) {
+        mostrarInformacion();
+    }
+
+    /**
+     * Muestra la información del proyecto y del estudiante
+     */
+    public static void mostrarInformacion() {
+        // Datos fijos del proyecto
+        String universidad = "Universidad Da Vinci de Guatemala";
+        String curso = "Estructura de Datos";
+        String docente = "Ing. Brandon Chitay";
+
+        // Solicitar el nombre del estudiante
+        System.out.print("Ingrese su nombre: ");
+        String estudiante = scanner.nextLine();
+
+        // Listas de tareas completadas y pendientes
+        List<String> puntosHechos = new ArrayList<>();
+        List<String> puntosFaltantes = new ArrayList<>();
+
+        // Se inicia el proyecto con los puntos completados
+        puntosHechos.add("1. Información del Desarrollador");
+        puntosHechos.add("2. Menú Principal");
+        puntosHechos.add("3. Carga de Datos desde un CSV");
+        puntosHechos.add("4. Algoritmo de Ordenamiento - Bubble Sort");
+        puntosHechos.add("5. Algoritmo de Ordenamiento - Enhanced Bubble Sort");
+        puntosHechos.add("6. Algoritmo de Ordenamiento - Quick Sort");
+        puntosHechos.add("7. Algoritmo de Ordenamiento - Selection Sort");
+        puntosHechos.add("8. Algoritmo de Ordenamiento - Merge Sort");
+        puntosHechos.add("9. Algoritmo de Búsqueda - Binary Search");
+
+        // Lista de tareas restantes
+        puntosFaltantes.add("10. Presentación Final en YouTube");
+
+        // Mostrar la información en consola
+        System.out.println("\n========================================");
+        System.out.println(universidad);
+        System.out.println(curso);
+        System.out.println(docente + "\n");
+        System.out.println("Nombre del estudiante: " + estudiante + "\n");
+
+        // Mostrar tareas completadas
+        System.out.println("PUNTOS HECHOS:");
+        for (String punto : puntosHechos) {
+            System.out.println("✅ " + punto);
+        }
+
+        // Mostrar tareas pendientes
+        System.out.println("\nPUNTOS FALTANTES:");
+        for (String punto : puntosFaltantes) {
+            System.out.println("❌ " + punto);
+        }
+
+        System.out.println("========================================");
+
+        // Esperar a que el usuario presione Enter antes de continuar
+        System.out.println("Presione Enter para continuar...");
+        scanner.nextLine();
+
+        // Llamar al menú principal
+        mostrarMenu();
+    }
+
+    /**
+     * Muestra el menú principal de opciones
+     */
+    public static void mostrarMenu() {
+        int opcion;
+        do {
+            try {
+                // Mostrar opciones
+                System.out.println("\n========== MENÚ PRINCIPAL ==========");
+                System.out.println("1. Cargar datos desde un archivo CSV");
+                System.out.println("2. Ordenar datos usando Bubble Sort");
+                System.out.println("3. Ordenar datos usando Enhanced Bubble Sort");
+                System.out.println("4. Ordenar datos usando Quick Sort");
+                System.out.println("5. Ordenar datos usando Selection Sort");
+                System.out.println("6. Ordenar datos usando Merge Sort");
+                System.out.println("7. Buscar un número con Binary Search");
+                System.out.println("8. Comparar rendimiento de algoritmos");
+                System.out.println("9. Visualizar paso a paso un ordenamiento");
+                System.out.println("10. Guardar resultados en archivo");
+                System.out.println("11. Salir");
+                System.out.print("Ingrese una opción: ");
+
+                // Leer opción del usuario
+                opcion = Integer.parseInt(scanner.nextLine());
+
+                // Ejecutar la acción correspondiente
+                switch (opcion) {
+                    case 1:
+                        opcionCargarDatos();
+                        break;
+                    case 2:
+                        AlgoritmoFactory.getAlgoritmo("BUBBLE").ordenar(listaDatos);
+                        mostrarResultados("Bubble Sort");
+                        break;
+                    case 3:
+                        AlgoritmoFactory.getAlgoritmo("ENHANCED_BUBBLE").ordenar(listaDatos);
+                        mostrarResultados("Enhanced Bubble Sort");
+                        break;
+                    case 4:
+                        AlgoritmoFactory.getAlgoritmo("QUICK").ordenar(listaDatos);
+                        mostrarResultados("Quick Sort");
+                        break;
+                    case 5:
+                        AlgoritmoFactory.getAlgoritmo("SELECTION").ordenar(listaDatos);
+                        mostrarResultados("Selection Sort");
+                        break;
+                    case 6:
+                        AlgoritmoFactory.getAlgoritmo("MERGE").ordenar(listaDatos);
+                        mostrarResultados("Merge Sort");
+                        break;
+                    case 7:
+                        opcionBinarySearch();
+                        break;
+                    case 8:
+                        compararRendimiento();
+                        break;
+                    case 9:
+                        visualizarOrdenamiento();
+                        break;
+                    case 10:
+                        guardarResultados();
+                        break;
+                    case 11:
+                        System.out.println("👋 Saliendo del programa...");
+                        break;
+                    default:
+                        System.out.println("⚠️ Opción no válida. Intente de nuevo.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("⚠️ Por favor, ingrese un número válido.");
+                opcion = 0; // Valor que no saldrá del bucle
+            } catch (Exception e) {
+                System.out.println("⚠️ Error inesperado: " + e.getMessage());
+                opcion = 0; // Valor que no saldrá del bucle
+            }
+        } while (opcion != 11);
+    }
+
+    /**
+     * Opción para cargar datos desde un archivo CSV
+     */
+    private static void opcionCargarDatos() {
+        try {
+            System.out.print("📂 Ingrese el nombre del archivo CSV: ");
+            String nombreArchivo = scanner.nextLine();
+            
+            List<Integer> datosCargados = new ArrayList<>();
+            
+            try (BufferedReader br = new BufferedReader(new FileReader(nombreArchivo))) {
+                String linea;
+                while ((linea = br.readLine()) != null) {
+                    String[] valores = linea.split(",");
+                    for (String valor : valores) {
+                        try {
+                            datosCargados.add(Integer.parseInt(valor.trim()));
+                        } catch (NumberFormatException e) {
+                            System.out.println("⚠️ Dato inválido ignorado: " + valor);
+                        }
+                    }
+                }
+                
+                if (datosCargados.isEmpty()) {
+                    System.out.println("⚠️ No se encontraron datos válidos en el archivo.");
+                } else {
+                    listaDatos.clear();
+                    listaDatos.addAll(datosCargados);
+                    System.out.println("✅ Datos cargados exitosamente: " + listaDatos.size() + " elementos.");
+                    System.out.println("📊 Muestra de datos: " + 
+                            listaDatos.subList(0, Math.min(10, listaDatos.size())));
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("❌ Error al leer el archivo: " + e.getMessage());
+        }
+    }
+    public static void main(String[] args) {
+        mostrarInformacion();
+        mostrarMenu();
+        scanner.close();
+        }
+    /**
+     * Opción para buscar un número con búsqueda binaria
+     */
+    private static void opcionBinarySearch() {
+        if (listaDatos.isEmpty()) {
+            System.out.println("❌ No hay datos cargados. Cargue datos primero.");
+            return;
+        }
+        
+        // Verificar si la lista está ordenada
+        boolean ordenada = true;
+        for (int i = 0; i < listaDatos.size() - 1; i++) {
+            if (listaDatos.get(i) > listaDatos.get(i + 1)) {
+                ordenada = false;
+                break;
+            }
+        }
+        
+        if (!ordenada) {
+            System.out.println("⚠️ La lista no está ordenada. Se ordenará primero con Merge Sort.");
+            AlgoritmoFactory.getAlgoritmo("MERGE").ordenar(listaDatos);
+        }
+        
+        try {
+            System.out.print("🔎 Ingrese el número que desea buscar: ");
+            int objetivo = Integer.parseInt(scanner.nextLine());
+            
+            long inicio = System.nanoTime();
+            int resultado = busquedaBinaria(listaDatos, objetivo);
+            long fin = System.nanoTime();
+            
+            if (resultado == -1) {
+                System.out.println("❌ El número " + objetivo + " no se encuentra en la lista.");
+            } else {
+                System.out.println("✅ El número " + objetivo + " se encuentra en el índice: " + resultado);
+            }
+            
+            System.out.println("⏱️ Tiempo de búsqueda: " + (fin - inicio) / 1000000.0 + " ms");
+        } catch (NumberFormatException e) {
+            System.out.println("⚠️ Por favor, ingrese un número válido.");
+        }
+    }
+    
+    /**
+     * Implementación del algoritmo de búsqueda binaria
+     */
+    private static int busquedaBinaria(List<Integer> lista, int objetivo) {
+        int inicio = 0;
+        int fin = lista.size() - 1;
+        
+        while (inicio <= fin) {
+            int medio = inicio + (fin - inicio) / 2;
+            
+            if (lista.get(medio) == objetivo) {
+                return medio;
+            }
+            
+            if (lista.get(medio) < objetivo) {
+                inicio = medio + 1;
+            } else {
+                fin = medio - 1;
+            }
+        }
+        
+        return -1;
+    }
+
+    /**
+     * Compara el rendimiento de los diferentes algoritmos de ordenamiento
+     */
+    private static void compararRendimiento() {
+        if (listaDatos.isEmpty()) {
+            System.out.println("❌ No hay datos cargados. Cargue datos primero.");
+            return;
+        }
+        
+        System.out.println("\n📊 Comparación de rendimiento:");
+        System.out.println("=======================================================");
+        System.out.println("Algoritmo\t\t| Tiempo (ms)\t| Comparaciones");
+        System.out.println("-------------------------------------------------------");
+        
+        List<AlgoritmoInfo> resultados = new ArrayList<>();
+        String[] algoritmos = {"BUBBLE", "ENHANCED_BUBBLE", "SELECTION", "QUICK", "MERGE"};
+        
+        for (String algoritmoNombre : algoritmos) {
+            List<Integer> copia = new ArrayList<>(listaDatos);
+            Algoritmo algoritmo = AlgoritmoFactory.getAlgoritmo(algoritmoNombre);
+            
+            long inicio = System.nanoTime();
+            algoritmo.ordenar(copia);
+            long fin = System.nanoTime();
+            long tiempo = (fin - inicio) / 1000000;
+            
+            resultados.add(new AlgoritmoInfo(algoritmoNombre, tiempo, algoritmo.getComparaciones()));
+        }
+        
+        // Ordenar resultados por tiempo
+        resultados.sort(Comparator.comparingLong(AlgoritmoInfo::getTiempo));
+        
+        // Mostrar resultados
+        for (AlgoritmoInfo info : resultados) {
+            System.out.println(String.format("%-20s | %8d ms\t| %,d", 
+                    info.getNombre(), info.getTiempo(), info.getComparaciones()));
+        }
+        
+        System.out.println("=======================================================");
+    }
+    
+    /**
+     * Visualiza paso a paso un algoritmo de ordenamiento
+     */
+    private static void visualizarOrdenamiento() {
+        if (listaDatos.isEmpty()) {
+            System.out.println("❌ No hay datos cargados. Cargue datos primero.");
+            return;
+        }
+        
+        try {
+            System.out.println("\nSeleccione el algoritmo a visualizar:");
+            System.out.println("1. Bubble Sort");
+            System.out.println("2. Selection Sort");
+            System.out.print("Opción: ");
+            
+            int opcion = Integer.parseInt(scanner.nextLine());
+            
+            if (opcion == 1) {
+                visualizarBubbleSort();
+            } else if (opcion == 2) {
+                visualizarSelectionSort();
+            } else {
+                System.out.println("⚠️ Opción no válida.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("⚠️ Por favor, ingrese un número válido.");
+        }
+    }
+    
+    /**
+     * Visualiza el algoritmo Bubble Sort paso a paso
+     */
+    private static void visualizarBubbleSort() {
+        List<Integer> copia = new ArrayList<>(listaDatos);
+        int n = copia.size();
+        
+        System.out.println("\n🔄 Visualización de Bubble Sort:");
+        
+        // Limitar a los primeros 20 elementos para la visualización
+        int limite = Math.min(n, 20);
+        List<Integer> visual = copia.subList(0, limite);
+        
+        System.out.println("Inicial: " + visual);
+        
+        for (int i = 0; i < limite - 1; i++) {
+            boolean intercambiado = false;
+            
+            for (int j = 0; j < limite - i - 1; j++) {
+                if (visual.get(j) > visual.get(j + 1)) {
+                    // Intercambiar elementos
+                    int temp = visual.get(j);
+                    visual.set(j, visual.get(j + 1));
+                    visual.set(j + 1, temp);
+                    intercambiado = true;
+                    
+                    System.out.println("Paso " + (i+1) + "." + (j+1) + ": " + visual + 
+                            " (Intercambio: " + visual.get(j) + " y " + visual.get(j+1) + ")");
+                }
+            }
+            
+            if (!intercambiado) {
+                System.out.println("Ordenamiento completado anticipadamente en el paso " + (i+1));
+                break;
+            }
+            
+            System.out.println("Fin pasada " + (i+1) + ": " + visual);
+        }
+        
+        System.out.println("Resultado final: " + visual);
+    }
+    
+    /**
+     * Visualiza el algoritmo Selection Sort paso a paso
+     */
+    private static void visualizarSelectionSort() {
+        List<Integer> copia = new ArrayList<>(listaDatos);
+        int n = copia.size();
+        
+        System.out.println("\n🎯 Visualización de Selection Sort:");
+        
+        // Limitar a los primeros 20 elementos para la visualización
+        int limite = Math.min(n, 20);
+        List<Integer> visual = copia.subList(0, limite);
+        
+        System.out.println("Inicial: " + visual);
+        
+        for (int i = 0; i < limite - 1; i++) {
+            int indiceMinimo = i;
+            
+            System.out.println("Pasada " + (i+1) + " - Buscando el mínimo a partir de la posición " + i);
+            
+            for (int j = i + 1; j < limite; j++) {
+                if (visual.get(j) < visual.get(indiceMinimo)) {
+                    indiceMinimo = j;
+                    System.out.println("   Nuevo mínimo encontrado: " + visual.get(j) + " en posición " + j);
+                }
+            }
+            
+            // Intercambiar
+            if (indiceMinimo != i) {
+                System.out.println("   Intercambiando: " + visual.get(i) + " y " + visual.get(indiceMinimo));
+                int temp = visual.get(i);
+                visual.set(i, visual.get(indiceMinimo));
+                visual.set(indiceMinimo, temp);
+            } else {
+                System.out.println("   No se requiere intercambio, el mínimo ya está en su posición");
+            }
+            
+            System.out.println("Fin pasada " + (i+1) + ": " + visual);
+        }
+        
+        System.out.println("Resultado final: " + visual);
+    }
+    
+    /**
+     * Guarda los resultados en un archivo
+     */
+    private static void guardarResultados() {
+        if (listaDatos.isEmpty()) {
+            System.out.println("❌ No hay datos cargados. Cargue datos primero.");
+            return;
+        }
+        
+        try {
+            System.out.print("📝 Ingrese el nombre del archivo para guardar los resultados: ");
+            String nombreArchivo = scanner.nextLine();
+            
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo))) {
+                writer.write("# Resultados del ordenamiento - " + new Date() + "\n\n");
+                writer.write("Total de elementos: " + listaDatos.size() + "\n\n");
+                writer.write("Datos ordenados:\n");
+                
+                int contador = 0;
+                for (Integer num : listaDatos) {
+                    writer.write(num.toString());
+                    if (++contador % 10 == 0) {
+                        writer.write("\n");
+                    } else {
+                        writer.write(", ");
+                    }
+                }
+            }
+            
+            System.out.println("✅ Resultados guardados exitosamente en " + nombreArchivo);
+        } catch (IOException e) {
+            System.out.println("❌ Error al guardar el archivo: " + e.getMessage());
+        }
+    }
+    public static void main(String[] args) {
+        mostrarInformacion();
+        mostrarMenu();
+        scanner.close();
+    /**
+     * Muestra los resultados después de un ordenamiento
+     */
+    private static void mostrarResultados(String nombreAlgoritmo) {
+        if (listaDatos.isEmpty()) {
+            System.out.println("❌ No hay datos cargados. Cargue datos primero.");
+            return;
+        }
+        
+        System.out.println("✅ Lista ordenada con " + nombreAlgoritmo + ".");
+        
+        // Mostrar solo una muestra de los datos si hay muchos
+        if (listaDatos.size() <= 20) {
+            System.out.println("📊 Lista ordenada: " + listaDatos);
+        } else {
+            System.out.println("📊 Muestra de la lista ordenada (primeros 10): " + 
+                    listaDatos.subList(0, 10));
+            System.out.println("📊 Muestra de la lista ordenada (últimos 10): " + 
+                    listaDatos.subList(listaDatos.size() - 10, listaDatos.size()));
+        }
+    }
+
+    /**
+     * Clase para almacenar información de rendimiento de algoritmos
+     */
+    private static class AlgoritmoInfo {
+        private final String nombre;
+        private final long tiempo;
+        private final long comparaciones;
+        
+        public AlgoritmoInfo(String nombre, long tiempo, long comparaciones) {
+            this.nombre = nombre;
+            this.tiempo = tiempo;
+            this.comparaciones = comparaciones;
+        }
+        
+        public String getNombre() {
+            return nombre;
+        }
+        
+        public long getTiempo() {
+            return tiempo;
+        }
+        
+        public long getComparaciones() {
+            return comparaciones;
+        }
+    }
+}
+
+/**
+ * Interfaz para los algoritmos de ordenamiento
+ */
+interface Algoritmo {
+    void ordenar(List<Integer> lista);
+    long getComparaciones();
+}
+
+/**
+ * Fábrica para crear instancias de algoritmos
+ */
+class AlgoritmoFactory {
+    public static Algoritmo getAlgoritmo(String tipo) {
+        switch (tipo.toUpperCase()) {
+            case "BUBBLE":
+                return new BubbleSort();
+            case "ENHANCED_BUBBLE":
+                return new EnhancedBubbleSort();
+            case "QUICK":
+                return new QuickSort();
+            case "SELECTION":
+                return new SelectionSort();
+            case "MERGE":
+                return new MergeSort();
+            default:
+                throw new IllegalArgumentException("Algoritmo no implementado: " + tipo);
+        }
+    }
+}
+
+/**
+ * Implementación de Bubble Sort
+ */
+class BubbleSort implements Algoritmo {
+    private long comparaciones = 0;
+    
+    @Override
+    public void ordenar(List<Integer> lista) {
+        comparaciones = 0;
+        int n = lista.size();
+        
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                comparaciones++;
+                if (lista.get(j) > lista.get(j + 1)) {
+                    // Intercambiar elementos
+                    int temp = lista.get(j);
+                    lista.set(j, lista.get(j + 1));
+                    lista.set(j + 1, temp);
+                }
+            }
+        }
+    }
+    
+    @Override
+    public long getComparaciones() {
+        return comparaciones;
+    }
+}
+
+/**
+ * Implementación de Enhanced Bubble Sort
+ */
+class EnhancedBubbleSort implements Algoritmo {
+    private long comparaciones = 0;
+    
+    @Override
+    public void ordenar(List<Integer> lista) {
+        comparaciones = 0;
+        int n = lista.size();
+        boolean intercambiado;
+        
+        for (int i = 0; i < n - 1; i++) {
+            intercambiado = false;
+            
+            for (int j = 0; j < n - i - 1; j++) {
+                comparaciones++;
+                if (lista.get(j) > lista.get(j + 1)) {
+                    // Intercambiar elementos
+                    int temp = lista.get(j);
+                    lista.set(j, lista.get(j + 1));
+                    lista.set(j + 1, temp);
+                    intercambiado = true;
+                }
+            }
+            
+            // Si no hubo intercambios, la lista ya está ordenada
+            if (!intercambiado) break;
+        }
+    }
+    
+    @Override
+    public long getComparaciones() {
+        return comparaciones;
+    }
+}
+
+/**
+ * Implementación de Quick Sort
+ */
+class QuickSort implements Algoritmo {
+    private long comparaciones = 0;
+    
+    @Override
+    public void ordenar(List<Integer> lista) {
+        comparaciones = 0;
+        quickSort(lista, 0, lista.size() - 1);
+    }
+    
+    private void quickSort(List<Integer> lista, int inicio, int fin) {
+        if (inicio < fin) {
+            int indicePivote = particion(lista, inicio, fin);
+            quickSort(lista, inicio, indicePivote - 1);
+            quickSort(lista, indicePivote + 1, fin);
+        }
+    }
+    
+    private int particion(List<Integer> lista, int inicio, int fin) {
+        // Mejora: seleccionar pivote como mediana de tres
+        int medio = inicio + (fin - inicio) / 2;
+        if (lista.get(medio) < lista.get(inicio)) {
+            intercambiar(lista, medio, inicio);
+        }
+        if (lista.get(fin) < lista.get(inicio)) {
+            intercambiar(lista, fin, inicio);
+        }
+        if (lista.get(medio) < lista.get(fin)) {
+            intercambiar(lista, medio, fin);
+        }
+        
+        int pivote = lista.get(fin);
+        int i = inicio - 1;
+        
+        for (int j = inicio; j < fin; j++) {
+            comparaciones++;
+            if (lista.get(j) <= pivote) {
+                i++;
+                intercambiar(lista, i, j);
+            }
+        }
+        
+        intercambiar(lista, i + 1, fin);
+        return i + 1;
+    }
+    
+    private void intercambiar(List<Integer> lista, int i, int j) {
+        int temp = lista.get(i);
+        lista.set(i, lista.get(j));
+        lista.set(j, temp);
+    }
+    
+    @Override
+    public long getComparaciones() {
+        return comparaciones;
+    }
+}
+
+/**
+ * Implementación de Selection Sort
+ */
+class SelectionSort implements Algoritmo {
+    private long comparaciones = 0;
+    
+    @Override
+    public void ordenar(List<Integer> lista) {
+        comparaciones = 0;
+        int n = lista.size();
+        
+        for (int i = 0; i < n - 1; i++) {
+            int indiceMinimo = i;
+            
+            for (int j = i + 1; j < n; j++) {
+                comparaciones++;
+                if (lista.get(j) < lista.get(indiceMinimo)) {
+                    indiceMinimo = j;
+                }
+            }
+            
+            // Intercambiar el mínimo encontrado con el primer elemento no ordenado
+            if (indiceMinimo != i) {
+                int temp = lista.get(i);
+                lista.set(i, lista.get(indiceMinimo));
+                lista.set(indiceMinimo, temp);
+            }
+        }
+    }
+    
+    @Override
+    public long getComparaciones() {
+        return comparaciones;
+    }
+}
+
+/**
+ * Implementación de Merge Sort
+ */
+class MergeSort implements Algoritmo {
+    private long comparaciones = 0;
+    
+    @Override
+    public void ordenar(List<Integer> lista) {
+        comparaciones = 0;
+        mergeSort(lista, 0, lista.size() - 1);
+    }
+    
+    private void mergeSort(List<Integer> lista, int inicio, int fin) {
+        if (inicio < fin) {
+            int medio = inicio + (fin - inicio) / 2;
+            
+            mergeSort(lista, inicio, medio);
+            mergeSort(lista, medio + 1, fin);
+            
+            merge(lista, inicio, medio, fin);
+        }
+    }
+    
+    private void merge(List<Integer> lista, int inicio, int medio, int fin) {
+        // Crear listas temporales
+        List<Integer> izquierda = new ArrayList<>();
+        List<Integer> derecha = new ArrayList<>();
+        
+        // Copiar datos a las listas temporales
+        for (int i = inicio; i <= medio; i++) {
+            izquierda.add(lista.get(i));
+        }
+        
+        for (int j = medio + 1; j <= fin; j++) {
+            derecha.add(lista.get(j));
+        }
+        
+        // Mezclar las listas temporales
+        int i = 0, j = 0, k = inicio;
+        
+        while (i < izquierda.size() && j < derecha.size()) {
+            comparaciones++;
+            if (izquierda.get(i) <= derecha.get(j)) {
+                lista.set(k, izquierda.get(i));
+                i++;
+            } else {
+                lista.set(k, derecha.get(j));
+                j++;
+            }
+            k++;
+        }
+        
+        // Copiar elementos restantes de izquierda, si hay
+        while (i < izquierda.size()) {
+            lista.set(k, izquierda.get(i));
+            i++;
+            k++;
+        }
+        
+        // Copiar elementos restantes de derecha, si hay
+        while (j < derecha.size()) {
+            lista.set(k, derecha.get(j));
+            j++;
+            k++;
+        }
+    }
+    
+    @Override
+    public long getComparaciones() {
+        return comparaciones;
+    }
